@@ -324,7 +324,7 @@ export default function ServicesOrbitDiagram() {
                   all times -- it never turns red/gradient, even once
                   the icon box above it is permanently lit. Only a
                   gentle hover color-shift remains, same as before. */}
-              <span className="whitespace-nowrap font-label text-[9px] uppercase tracking-wider text-neutral transition-colors group-hover:text-primary sm:text-[10px]">
+              <span className="max-w-17.5 text-center leading-tight whitespace-normal font-label text-[9px] uppercase tracking-wider text-neutral transition-colors group-hover:text-primary sm:max-w-none sm:whitespace-nowrap sm:text-[10px]">
                 {service.title}
               </span>
             </Link>

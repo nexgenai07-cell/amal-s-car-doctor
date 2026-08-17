@@ -300,6 +300,36 @@ h6 {
 }
 
 /* ================================================================
+   SERVICES HUB — MOBILE/TABLET PILL ROW SCROLLBAR
+   ================================================================
+   Applied to the horizontal, swipeable service-pill row inside
+   ServicesSidebar.jsx (the mobile/tablet layout only — see the
+   `services-pills-scroll` class on that <nav>). By default this row
+   inherits the browser's normal horizontal scrollbar, which renders
+   thick and grey, clashing with the slim red accent used everywhere
+   else on the site (see ::-webkit-scrollbar above). This keeps the
+   track visible — since it's the only hint on touch devices that the
+   row scrolls — but shrinks it down to a slim red bar instead.
+   ================================================================ */
+.services-pills-scroll {
+  scrollbar-width: thin; /* Firefox: makes the track thinner */
+  scrollbar-color: var(--color-primary) transparent; /* Firefox: thumb, track */
+}
+.services-pills-scroll::-webkit-scrollbar {
+  height: 4px; /* Chrome, Safari, modern Edge: thin horizontal track */
+}
+.services-pills-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.services-pills-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 9999px;
+}
+.services-pills-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}
+
+/* ================================================================
    SERVICES HUB — DETAIL CARD SHADOW
    ================================================================
    Used by src/components/services-hub/ServiceDetailPanel.jsx. Gives
@@ -634,4 +664,60 @@ h6 {
     color-mix(in srgb, var(--color-primary) 12%, transparent),
     transparent 70%
   );
+}
+/* ================================================================
+   HERO SECTION — BACKGROUND VIDEO OVERLAY (HOME PAGE)
+   ================================================================
+   Used by src/components/home/HeroSection.jsx. The hero now plays a
+   real repair-workshop video full-bleed behind the centered text,
+   so these two layers sit on top of the <video> element to make
+   sure the heading, paragraph, and buttons stay easily readable no
+   matter how bright/busy the current video frame is, while still
+   letting the footage clearly show through.
+   ================================================================ */
+
+/* Two stacked gradients on ONE layer:
+   1) a vertical gradient -> darkest at the very top (behind the
+      badge/heading) and at the very bottom, lighter in the middle
+      so the video still reads.
+   2) a horizontal gradient -> darkest in the CENTER (directly behind
+      the centered text column) fading lighter toward both the left
+      and right edges, so the video's detail still shows at the
+      sides while the text in the middle stays fully readable. */
+.hero-video-overlay {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-background) 90%, transparent) 0%,
+      color-mix(in srgb, var(--color-background) 55%, transparent) 42%,
+      color-mix(in srgb, var(--color-background) 94%, transparent) 100%
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-background) 55%, transparent) 0%,
+      color-mix(in srgb, var(--color-background) 88%, transparent) 50%,
+      color-mix(in srgb, var(--color-background) 55%, transparent) 100%
+    );
+}
+
+/* Soft red ember glow centered low in the hero, directly behind the
+   centered text column -- same "diagnostic scanner" warmth used by
+   every other ambient glow on this site (orbit diagram, beam grid,
+   transformation slider), so the video hero still feels branded and
+   not just like a plain stock video with text on top. */
+.hero-ember-glow {
+  background: radial-gradient(
+    55% 55% at 50% 85%,
+    color-mix(in srgb, var(--color-primary) 22%, transparent),
+    transparent 70%
+  );
+}
+
+/* Extra drop shadow behind the hero heading/paragraph specifically,
+   on top of the .hero-video-overlay scrim above -- video frames can
+   still have bright patches (e.g. workshop ceiling lights) that a
+   flat overlay alone doesn't fully tame, so the text itself also
+   gets a soft dark shadow to guarantee contrast in every frame. */
+.hero-text-shadow {
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.7);
 }

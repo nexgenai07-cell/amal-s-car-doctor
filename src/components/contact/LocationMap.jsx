@@ -2,27 +2,41 @@
  * ================================================================
  * LocationMap.jsx
  * ================================================================
- * A REAL, fully interactive Google Maps embed pinned to the
- * workshop's exact geocoded coordinates. No API key is needed:
- * this uses Google's public "maps?...&output=embed" iframe format,
- * the same technique behind the "Share > Embed a map" link Google
- * Maps itself generates.
+ * A REAL, fully interactive Google Maps embed pointing at the
+ * workshop's location. No API key is needed: this uses Google's
+ * public "maps?...&output=embed" iframe format, the same technique
+ * behind the "Share > Embed a map" link Google Maps itself
+ * generates.
  *
- * NOTE on the coordinate query below: this is the ONE query format
- * that reliably renders the actual street-level map (place_id: and
- * address-text queries were both tried and either failed to render
- * at all without a paid Google Maps API key, or rendered but showed
- * a broken "Place info couldn't load" bubble on click — a known
- * limitation of Google's free classic embed, not something fixable
- * from this side without adding a billed API key). The map itself,
- * zoom, and panning all work correctly either way; our OWN styled
- * info card below (with the real brand name, status, and address)
- * is what actually communicates the location's info to visitors,
- * rather than relying on Google's native marker click-bubble.
+ * WHY A TEXT SEARCH QUERY (brand name + address), NOT A RAW
+ * LAT/LONG PAIR:
+ * A raw `q=<lat>,<long>` query drops a plain pin at that exact
+ * coordinate with no awareness of what's actually there -- if the
+ * coordinate was hand-picked/estimated even slightly off, the pin
+ * lands on a neighbouring building or the street instead of the
+ * workshop itself. Searching by the business name and address
+ * instead lets Google geocode it against its own live places
+ * database, so the marker lands on the real, verified location the
+ * same way a visitor's own search would. The map itself, zoom, and
+ * panning all work correctly either way; our OWN styled info card
+ * below (with the real brand name, status, and address) is what
+ * actually communicates the location's info to visitors, rather
+ * than relying on Google's native marker click-bubble.
+ *
+ * IF THE PIN IS STILL OFF:
+ * That means this business isn't (yet) findable in Google's own
+ * places database under this exact name/address -- no query format
+ * on our end can fix that, since we're pointing Google at its own
+ * data, not supplying the location ourselves. The permanent fix is
+ * to open Google Maps, search for the real listing (or add/claim it
+ * via Google Business Profile if it doesn't exist yet), then use
+ * that listing's own "Share > Embed a map" link and swap the `src`
+ * below for the exact embed URL it gives you -- that guarantees a
+ * pixel-correct pin straight from Google.
  *
  * Because it's a real <iframe> map (not a static image), scroll-
  * to-zoom, click-and-drag panning, and the on-map +/- zoom controls
- * all work natively — zoom is fully functional out of the box.
+ * all work natively -- zoom is fully functional out of the box.
  *
  * Rendered as the RIGHT column inside the shared, highlighted
  * "form + map" card on the Contact page (see Contact.jsx). Kept
@@ -34,12 +48,10 @@ import { motion } from "motion/react";
 import { FaLocationDot } from "react-icons/fa6";
 import { siteConfig } from "../../config/siteConfig";
 
-// Exact coordinates for siteConfig.address.full ("6426 Abi
-// Hourairah, An Nasim Al Gharbi, Riyadh 14244"), geocoded once so
-// the pin lands precisely on the real building rather than an
-// approximate street-level guess.
-const LATITUDE = 24.7170063;
-const LONGITUDE = 46.8521382;
+// What we search Google's own places database for -- brand name
+// first so an existing verified listing is matched over a generic
+// street address point.
+const MAP_SEARCH_QUERY = `${siteConfig.brandName}, ${siteConfig.address.full}`;
 const DEFAULT_ZOOM = 16;
 
 export default function LocationMap() {
@@ -50,13 +62,14 @@ export default function LocationMap() {
       transition={{ duration: 0.6, delay: 0.25 }}
       className="relative h-full min-h-65 lg:min-h-0 overflow-hidden rounded-xl border border-tertiary/20"
     >
-      {/* The real, interactive map. Centered + pinned on the exact
-          workshop coordinates, with scroll/drag/+-button zoom all
-          working natively since this is a genuine Google Maps
-          iframe, not a static screenshot. */}
+      {/* The real, interactive map. Searches Google's own places
+          database for the workshop by name + address (see the note
+          above), with scroll/drag/+-button zoom all working
+          natively since this is a genuine Google Maps iframe, not a
+          static screenshot. */}
       <iframe
         title={`${siteConfig.brandName} — Location Map`}
-        src={`https://www.google.com/maps?q=${LATITUDE},${LONGITUDE}&z=${DEFAULT_ZOOM}&output=embed`}
+        src={`https://www.google.com/maps?q=${encodeURIComponent(MAP_SEARCH_QUERY)}&z=${DEFAULT_ZOOM}&output=embed`}
         className="absolute inset-0 h-full w-full"
         style={{ border: 0 }}
         loading="lazy"

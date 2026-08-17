@@ -2,10 +2,10 @@
  * ================================================================
  * WorkingHoursCard.jsx
  * ================================================================
- * "Working Hours" card — shows Sat-Thu hours, Friday closed, and a
- * live "Open Now / Closed" indicator calculated from the current
- * time (not hardcoded), matching the design's "OPEN NOW - CLOSES
- * 10 PM" style badge.
+ * "Working Hours" card — shows Sat-Thu hours, Friday's later
+ * opening time, and a live "Open Now / Closed" indicator calculated
+ * from the current time (not hardcoded), showing an "OPEN NOW -
+ * CLOSES 12 AM" style badge.
  *
  * Restyled as a compact "glass" card — same frosted-glass recipe
  * (bg-secondary/40 + backdrop-blur-xl + soft red glow blobs + a
@@ -21,22 +21,26 @@ import { siteConfig } from "../../config/siteConfig";
 import { cn } from "../../utils/cn";
 
 // Calculates whether the workshop is currently open, based on the
-// real current time and day. Working hours: Sat-Thu 8AM-10PM,
-// Friday closed (matches siteConfig / design).
+// real current time and day. Working hours: Sat-Thu 8 AM-12 AM,
+// Friday 1 PM-12 AM (matches siteConfig) -- open every day, Friday
+// simply opens later.
 function getOpenStatus() {
   const now = new Date();
   const day = now.getDay(); // 0 = Sunday, 5 = Friday, 6 = Saturday
   const hour = now.getHours();
 
   const isFriday = day === 5;
-  const isWithinHours = hour >= 8 && hour < 22; // 8 AM - 10 PM
+  const openingHour = isFriday ? 13 : 8; // Friday opens at 1 PM, every other day at 8 AM
+  // Every day runs until midnight, so "within hours" only needs to
+  // check the opening side -- the day rolls over to the next date
+  // at 12 AM either way.
+  const isWithinHours = hour >= openingHour;
 
-  if (isFriday) {
-    return { isOpen: false, label: "Closed Today" };
-  }
   return {
     isOpen: isWithinHours,
-    label: isWithinHours ? "Open Now — Closes 10 PM" : "Closed — Opens 8 AM",
+    label: isWithinHours
+      ? "Open Now — Closes 12 AM"
+      : `Closed — Opens ${isFriday ? "1 PM" : "8 AM"}`,
   };
 }
 
@@ -139,7 +143,7 @@ export default function WorkingHoursCard() {
                     {siteConfig.workingHours.fridayLabel}
                   </span>
                 </div>
-                <span className="font-label text-xs text-primary shrink-0">
+                <span className="font-label text-xs text-neutral shrink-0">
                   {siteConfig.workingHours.fridayStatus}
                 </span>
               </div>

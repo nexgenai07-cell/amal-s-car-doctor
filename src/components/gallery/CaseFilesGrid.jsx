@@ -23,9 +23,9 @@ import { galleryCaseFiles } from "../../data/galleryCaseFiles";
 
 export default function CaseFilesGrid() {
   return (
-    <section className="py-16 lg:py-20 overflow-hidden">
+    <section className="py-16 lg:py-10 overflow-hidden">
       <Container>
-        <h2 className="font-heading font-bold text-2xl sm:text-3xl text-center mb-4">
+        <h2 className="font-heading font-bold text-2xl sm:text-3xl text-center mb-2">
           Case Files
         </h2>
         <p className="text-neutral text-sm sm:text-base text-center max-w-xl mx-auto mb-12">
@@ -42,13 +42,12 @@ export default function CaseFilesGrid() {
         <SkewedCarousel
           items={galleryCaseFiles}
           initialIndex={Math.floor(galleryCaseFiles.length / 2)}
-          cardWidth={300}
-          // Taller than the reference's plain image-only "3 / 4" --
-          // our slides also carry a title + 3 text rows below the
-          // photo, so the box needs extra height to fit that
-          // content in full (see CaseFileCard.jsx) without clipping
-          // the last row on the longer case files.
-          aspectRatio="5 / 9"
+          // Compact card size: a short "3 / 4" box paired with the
+          // fixed, small image height in CaseFileCard.jsx keeps the
+          // title and Problem/Solution/Result rows tight and legible
+          // without the slide reading as oversized.
+          cardWidth={230}
+          aspectRatio="3 / 4"
           rotation={48}
           inactiveScale={0.82}
           perspective={1000}

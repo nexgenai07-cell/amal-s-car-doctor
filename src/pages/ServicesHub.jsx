@@ -52,7 +52,7 @@ export default function ServicesHub() {
     <>
       <ServicesHero />
 
-      <section ref={explorerRef} className="scroll-mt-24 pb-20 lg:pb-28">
+      <section ref={explorerRef} className="scroll-mt-24 pb-20 lg:pb-21">
         <Container>
           <ServicesExplorer
             groupedServices={groupedServices}

@@ -3,10 +3,10 @@
  * JourneyTimeline.jsx
  * ================================================================
  * "Our Journey" — 4 milestones connected by a line with dots,
- * alternating above/below the line on desktop (matching the zigzag
- * layout in the design). On mobile, it simplifies to a single
- * vertical list since a horizontal zigzag doesn't fit small screens
- * well.
+ * alternating above/below the line from tablet size up (matching
+ * the zigzag layout in the design). Only on narrow phone screens
+ * does it simplify to a single vertical list, since a horizontal
+ * zigzag doesn't fit that narrow.
  *
  * DISTINCT SECTION BACKGROUND:
  * Unlike the plain page background used elsewhere, this section
@@ -110,8 +110,12 @@ export default function JourneyTimeline() {
           Our Journey
         </h2>
 
-        {/* ---------------- DESKTOP: horizontal zigzag timeline ---------------- */}
-        <div className="hidden lg:block relative">
+        {/* ---------------- TABLET & UP: horizontal zigzag timeline ----------------
+            Activates from the "md" breakpoint (768px) rather than "lg"
+            (1024px) so a tablet like iPad Mini gets the same
+            horizontal layout as a large desktop, instead of falling
+            back to the mobile stacked list below. */}
+        <div className="hidden md:block relative">
           {/* Faint static track behind the line, so the un-drawn
               portion of the path is still subtly visible before the
               light reaches it. */}
@@ -179,8 +183,12 @@ export default function JourneyTimeline() {
           </div>
         </div>
 
-        {/* ---------------- MOBILE: simple vertical list ---------------- */}
-        <div className="flex lg:hidden flex-col gap-6 relative">
+        {/* ---------------- PHONE ONLY: simple vertical list ----------------
+            Wrapped in "max-w-70 mx-auto" so the whole dot+line+card
+            block is centered as a unit on the screen (equal breathing
+            room on both sides), instead of stretching full-width and
+            reading as pinned to the left edge. */}
+        <div className="flex md:hidden flex-col gap-6 relative max-w-70 mx-auto">
           {/* Faint static vertical track, mirroring the desktop track. */}
           <div className="absolute top-0 bottom-0 left-1.25 w-px bg-tertiary/20" />
 

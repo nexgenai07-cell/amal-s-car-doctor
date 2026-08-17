@@ -34,7 +34,7 @@ export default function ServicesExplorer({
   onSelect,
 }) {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 rounded-[28px] border border-tertiary/20 bg-secondary/30 p-4 sm:p-6 lg:h-160 lg:flex-row lg:gap-8 lg:p-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 rounded-[28px] border border-tertiary/20 bg-secondary/30 p-2 sm:p-4 lg:h-135 lg:flex-row lg:gap-8 lg:p-8">
       <ServicesSidebar
         groupedServices={groupedServices}
         activeSlug={activeService.slug}

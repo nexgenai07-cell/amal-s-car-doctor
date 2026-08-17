@@ -44,12 +44,12 @@ import { cn } from "../../utils/cn";
 // deck reads as uniform no matter which case is showing.
 function CaseRow({ label, value, highlight }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="font-label text-[9px] uppercase tracking-wider text-neutral">
+    <div className="flex flex-col gap-0.5">
+      <span className="font-label text-[8px] uppercase tracking-wider text-red-600">
         {label}
       </span>
       <p
-        className={`text-xs leading-relaxed line-clamp-2 min-h-10 ${highlight ? "text-success" : "text-white"}`}
+        className={`text-[10px] sm:text-xs leading-snug highlight ? "text-success" : "text-white"}`}
       >
         {value}
       </p>
@@ -90,8 +90,13 @@ export default function CaseFileCard({
       {/* Image area -- shows a placeholder icon block until real
           workshop photos are provided. Always kept sharp/unblurred,
           even on receding slides, so the deck still reads as a
-          recognisable photo strip at a glance. */}
-      <div className="aspect-video shrink-0 bg-secondary-light flex items-center justify-center">
+          recognisable photo strip at a glance.
+
+          A fixed height (rather than an aspect ratio tied to card
+          width) keeps the photo compact and proportionate at every
+          screen size, leaving the caption block below it with
+          consistent room to breathe. */}
+      <div className="h-20 sm:h-24 shrink-0 bg-secondary-light flex items-center justify-center">
         {image ? (
           <img
             src={image}
@@ -100,7 +105,7 @@ export default function CaseFileCard({
             draggable={false}
           />
         ) : (
-          <FaCarSide className="text-tertiary/40 text-4xl" />
+          <FaCarSide className="text-tertiary/40 text-3xl" />
         )}
       </div>
 
@@ -110,10 +115,10 @@ export default function CaseFileCard({
           the centered card's text instead of trying to read every
           tilted neighbour at once. */}
       <div
-        className="p-4 sm:p-5 flex flex-col gap-3 sm:gap-4 min-h-0 overflow-hidden"
+        className="p-2.5 sm:p-2 flex flex-col gap-1.5 sm:gap-3 min-h-0 overflow-hidden"
         style={{ filter: blurAmount > 0 ? `blur(${blurAmount}px)` : "none" }}
       >
-        <h3 className="font-heading font-semibold text-sm sm:text-base leading-snug line-clamp-2 min-h-10 sm:min-h-11">
+        <h3 className="font-heading font-semibold text-xs sm:text-sm leading-snug line-clamp-2 min-h-8 sm:min-h-3 text-success">
           {title}
         </h3>
         <CaseRow label="Problem" value={problem} />

@@ -14,7 +14,7 @@ import { comparisons } from "../../data/comparisons";
 // value on the right, separated by a thin bottom border.
 function ComparisonRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-tertiary/20 last:border-0">
+    <div className="flex items-center justify-between py-1 border-b border-tertiary/20 last:border-0">
       <span className="text-neutral text-sm">{label}</span>
       <span className="font-label text-sm text-white font-medium">{value}</span>
     </div>
@@ -23,7 +23,7 @@ function ComparisonRow({ label, value }) {
 
 export default function ComparisonSection() {
   return (
-    <section className="py-20 lg:py-28 bg-secondary/30">
+    <section className="py-5 lg:py-8 bg-secondary/30">
       <Container>
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center mb-12">
           Popular Comparisons
@@ -39,7 +39,7 @@ export default function ComparisonSection() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="bg-secondary border border-tertiary/20 rounded-xl p-6"
             >
-              <h3 className="font-heading font-semibold text-base text-center mb-4 pb-4 border-b border-tertiary/20">
+              <h3 className="font-heading font-semibold text-base text-center mb-3 pb-3 border-b border-tertiary/20">
                 {item.title}
               </h3>
               <ComparisonRow label="Duration" value={item.duration} />

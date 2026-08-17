@@ -16,10 +16,13 @@
  *   scrolls internally with the scrollbar hidden (see the
  *   `services-sidebar-scroll` class in index.css) so the shell's
  *   surface stays visually clean instead of showing a scroll track.
- * - Mobile/tablet: the grouped layout collapses into a single
- *   horizontal, swipeable row of pills (ungrouped, icon + label).
+ * - Mobile/tablet: the grouped layout collapses into a single set of
+ *   ungrouped pills (icon + label), under a small "Services" heading,
+ *   wrapping onto as many rows as needed so every option is visible
+ *   at once with no horizontal scrolling.
  */
 import { cn } from "../../utils/cn";
+import SectionLabel from "../shared/SectionLabel";
 
 /**
  * @param {Array<{group: string, items: Array}>} groupedServices
@@ -82,33 +85,36 @@ export default function ServicesSidebar({
         </div>
       </nav>
 
-      {/* Mobile/tablet: horizontal scroll pills, ungrouped */}
-      <nav
-        aria-label="Services"
-        className="lg:hidden -mx-4 mb-6 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6"
-      >
-        {groupedServices
-          .flatMap((section) => section.items)
-          .map((service) => {
-            const isActive = service.slug === activeSlug;
-            return (
-              <button
-                key={service.slug}
-                type="button"
-                onClick={() => onSelect(service.slug)}
-                aria-current={isActive ? "true" : undefined}
-                className={cn(
-                  "flex shrink-0 snap-start items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2.5 font-label text-xs uppercase tracking-wider transition-colors duration-200 cursor-pointer",
-                  isActive
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-tertiary/30 bg-secondary text-neutral hover:border-tertiary/60 hover:text-white",
-                )}
-              >
-                <service.icon className="text-sm" />
-                {service.title}
-              </button>
-            );
-          })}
+      {/* Mobile/tablet: all services shown together as a centered,
+          wrapping row of pill badges (ungrouped, icon + label) sitting
+          under a small "Services" heading -- no horizontal scrolling,
+          every option is visible at once. */}
+      <nav aria-label="Services" className="lg:hidden mb-6">
+        <SectionLabel className="mb-3">Services</SectionLabel>
+        <div className="flex flex-wrap justify-center gap-2">
+          {groupedServices
+            .flatMap((section) => section.items)
+            .map((service) => {
+              const isActive = service.slug === activeSlug;
+              return (
+                <button
+                  key={service.slug}
+                  type="button"
+                  onClick={() => onSelect(service.slug)}
+                  aria-current={isActive ? "true" : undefined}
+                  className={cn(
+                    "flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2.5 font-label text-xs uppercase tracking-wider transition-colors duration-200 cursor-pointer",
+                    isActive
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-tertiary/30 bg-secondary text-neutral hover:border-tertiary/60 hover:text-white",
+                  )}
+                >
+                  <service.icon className="text-sm" />
+                  {service.title}
+                </button>
+              );
+            })}
+        </div>
       </nav>
     </>
   );

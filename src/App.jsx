@@ -19,6 +19,8 @@
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import ScrollToTop from "./components/layout/ScrollToTop";
+import BackToTopButton from "./components/layout/BackToTopButton";
 import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
@@ -27,6 +29,12 @@ export default function App() {
     // the bottom of the viewport, even on pages with very little
     // content (instead of floating in the middle of the screen).
     <div className="flex flex-col min-h-screen bg-background">
+      {/* Renders nothing visible — just resets scroll position to
+          the top every time the route changes, so every page opens
+          starting from the top instead of keeping the previous
+          page's scroll position. */}
+      <ScrollToTop />
+
       <Navbar />
 
       {/* flex-1 makes this main content area stretch to fill all
@@ -36,6 +44,11 @@ export default function App() {
       </main>
 
       <Footer />
+
+      {/* Floating bottom-left button. Hidden near the top of the
+          page, fades in once the visitor scrolls down, and smoothly
+          scrolls back to the top of the page when clicked. */}
+      <BackToTopButton />
     </div>
   );
 }

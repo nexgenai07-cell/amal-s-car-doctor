@@ -62,13 +62,16 @@ export const siteConfig = {
 
   // ---------------- WORKING HOURS ----------------
   // Used in: Footer, Contact page (WorkingHoursCard), Home hero
+  // Open every day of the week -- Friday's only difference is a
+  // later opening time (1 PM instead of 8 AM), it is NOT a closed
+  // day.
   workingHours: {
     weekdaysLabel: "Sat-Thu",
-    weekdaysTime: "8:00 AM - 10:00 PM",
+    weekdaysTime: "8:00 AM - 12:00 AM",
     fridayLabel: "Friday",
-    fridayStatus: "Closed",
+    fridayStatus: "1:00 PM - 12:00 AM",
     // Combined string used in places like the footer
-    displayString: "Sat-Thu: 8:00 AM - 10:00 PM",
+    displayString: "Sat-Thu: 8:00 AM - 12:00 AM",
   },
 
   // ---------------- SOCIAL LINKS ----------------
