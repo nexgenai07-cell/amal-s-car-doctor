@@ -1,0 +1,637 @@
+/* ================================================================
+   GOOGLE FONTS IMPORT
+   ================================================================
+   We load all 3 fonts used in the design in one request:
+   - Montserrat      -> used for all headings (bold, strong, technical)
+   - Hanken Grotesk   -> used for body text / paragraphs (clean, readable)
+   - JetBrains Mono   -> used for labels, badges, status text
+                         (gives the "diagnostic / techy" feel seen in the UI,
+                         e.g. "STATUS: OPERATIONAL", "SCAN IN PROGRESS")
+   We only load the specific font weights we actually need, to keep
+   the page fast (no unused weights downloaded).
+   ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ================================================================
+   TAILWIND CSS v4 IMPORT
+   ================================================================
+   Tailwind v4 does NOT use a tailwind.config.js file for basic theme
+   setup anymore. Instead, we import the framework here and define
+   our custom design tokens directly in this file using @theme below.
+   ================================================================ */
+@import "tailwindcss";
+
+/* ================================================================
+   DESIGN TOKENS — SINGLE SOURCE OF TRUTH FOR THE WHOLE PROJECT
+   ================================================================
+   IMPORTANT RULE FOR THIS PROJECT:
+   Never hardcode a hex color (e.g. "#E61919") or a font name directly
+   inside a component file. ALWAYS use these tokens via Tailwind
+   utility classes (e.g. bg-primary, text-neutral, font-heading).
+
+   Why this matters: if the client asks to change the brand red color
+   tomorrow, we change ONE line here, and it updates across the
+   entire website automatically — no need to search and replace in
+   50 different component files.
+
+   Every value below is taken directly from the colouring scheme
+   and logo provided in the design document.
+   ================================================================ */
+@theme {
+  /* ---------------- COLORS ---------------- */
+
+  /* PRIMARY — the main brand red. Used for buttons, CTAs, active nav
+     link, highlighted words inside headings, icons that need to stand
+     out, form focus states, etc. */
+  --color-primary: #e61919;
+  --color-primary-dark: #b31313; /* used for hover state on red buttons */
+  --color-primary-light: #ff4d4d; /* used for subtle glows / lighter accents */
+
+  /* SECONDARY — near-black. Used for card backgrounds, section
+     backgrounds that need to sit slightly above the page background,
+     input backgrounds, etc. */
+  --color-secondary: #1a1a1a;
+  --color-secondary-light: #242424; /* used for hover state on dark cards */
+
+  /* TERTIARY — mid grey. Used for borders, dividers, outlined button
+     borders, inactive/disabled elements. */
+  --color-tertiary: #6d6d6d;
+
+  /* NEUTRAL — lighter grey. Used for secondary/muted text (paragraphs,
+     descriptions) so it doesn't compete with white headings. */
+  --color-neutral: #8c8c8c;
+
+  /* BACKGROUND — the true page background color (darker than the
+     "secondary" cards so cards visually sit on top of the page). */
+  --color-background: #0d0d0d;
+
+  /* WHITE — pure white, used for headings and primary text on the
+     dark background. */
+  --color-white: #ffffff;
+
+  /* SUCCESS — green, used ONLY for live status indicators like the
+     green dot in "STATUS: OPERATIONAL" and "ALL SYSTEMS NOMINAL". */
+  --color-success: #22c55e;
+
+  /* ---------------- FONTS ---------------- */
+
+  /* Heading font -> used on every h1/h2/h3 and big hero text */
+  --font-heading: "Montserrat", sans-serif;
+
+  /* Body font -> used for all paragraph / description text */
+  --font-body: "Hanken Grotesk", sans-serif;
+
+  /* Label font -> used for small uppercase labels, badges, status
+     text, form labels — anything that needs that "technical readout"
+     look from the design. */
+  --font-label: "JetBrains Mono", monospace;
+}
+
+/* ================================================================
+   MARQUEE ANIMATION (used by src/components/ui/Marquee.jsx)
+   ================================================================
+   Powers the infinite horizontal scroll on the "What Our Clients
+   Say" section. Kept as plain, un-layered CSS (not inside @theme)
+   on purpose: unlayered CSS always wins the cascade over Tailwind's
+   generated utility layers, so this animation can never accidentally
+   get overridden/purged, and there is only ONE indirection step
+   (class -> animation), not two, which keeps it simple to debug.
+
+   HOW IT WORKS:
+   Marquee.jsx renders the same row of cards several times back to
+   back, then this animation slides that whole duplicated group left
+   by exactly "100% of its own width + the gap between items". The
+   instant the first copy has scrolled fully out of view, the next
+   copy is sitting in the exact spot the first one started in -- so
+   the loop point is invisible and the scroll never jumps or resets.
+
+   `.marquee-track` / `.marquee-track-vertical` are applied directly
+   as classNames in Marquee.jsx (no Tailwind arbitrary-value needed
+   for the animation itself, since @keyframes cannot be expressed as
+   a Tailwind utility). `--duration` and `--gap` are regular CSS
+   custom properties, set via Tailwind's bracket syntax
+   (e.g. className="[--duration:38s]") on the Marquee wrapper, and
+   inherited down to these track elements automatically.
+
+   IMPORTANT -- WHY LONGHAND PROPERTIES, NOT THE `animation` SHORTHAND:
+   Marquee.jsx flips the scroll direction (for the "reverse" row) and
+   pauses on hover using Tailwind arbitrary-value utilities:
+     - reverse:      [animation-direction:reverse]
+     - pause-on-hover: group-hover:[animation-play-state:paused]
+   Those Tailwind utilities live inside Tailwind's `@layer utilities`.
+   Per the CSS cascade-layers spec, ANY plain/unlayered CSS rule
+   (like the ones in this file) always wins over a layered rule for
+   the same property on the same element -- regardless of selector
+   specificity or the order the rules appear in.
+   The `animation` SHORTHAND sets every one of its sub-properties at
+   once, including `animation-direction` and `animation-play-state`
+   -- so writing `animation: marquee 40s linear infinite;` here
+   silently resets both of those back to their defaults (`normal` /
+   `running`) on THIS unlayered rule, which then always beats the
+   layered Tailwind utilities trying to set them, no matter what.
+   That is exactly why the "reverse" row was not actually reversing.
+   The fix is to only set the LONGHAND properties this rule actually
+   needs to control (name/duration/timing-function/iteration-count)
+   and leave `animation-direction` / `animation-play-state` alone
+   entirely, so there is no competing unlayered rule for them and
+   Marquee.jsx's Tailwind utilities are free to apply normally.
+   ================================================================ */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+.marquee-track {
+  animation-name: marquee;
+  animation-duration: var(--duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.marquee-track-vertical {
+  animation-name: marquee-vertical;
+  animation-duration: var(--duration, 40s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ================================================================
+   RISING PARTICLES BACKGROUND
+   ================================================================
+   Used by src/components/shared/RisingParticles.jsx, which renders
+   this background behind the first ("hero") section of the
+   Services, About Us, and Gallery pages.
+
+   HOW ONE PARTICLE MOVES:
+   Each dot starts invisible at the very bottom of its section,
+   fades in, rises in a straight-up path while drifting sideways by
+   its own random `--particle-drift` amount (set inline per-particle
+   in RisingParticles.jsx, since that value differs for every dot),
+   fades back out near the top, then the animation loops forever.
+   `animation-delay` is set to a NEGATIVE, randomised value per
+   particle (also in RisingParticles.jsx) so the whole field looks
+   already "in motion" on page load, instead of every dot starting
+   its rise from the bottom at the exact same moment.
+
+   Kept as plain unlayered CSS (like the marquee keyframes above)
+   so it can never be accidentally overridden by a Tailwind utility
+   layer rule targeting the same element.
+   ================================================================ */
+@keyframes rising-particle {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--particle-opacity, 0.5);
+  }
+  50% {
+    transform: translate(var(--particle-drift), -50vh) scale(1);
+  }
+  88% {
+    opacity: var(--particle-opacity, 0.5);
+  }
+  100% {
+    transform: translate(calc(var(--particle-drift) * 1.6), -100vh)
+      scale(0.6);
+    opacity: 0;
+  }
+}
+
+.rising-particle {
+  animation-name: rising-particle;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  /* Solid bright core fading into a soft red halo, so each dot
+     reads as a small glowing ember rather than a flat circle. */
+  background: radial-gradient(
+    circle,
+    var(--color-primary-light) 0%,
+    var(--color-primary) 55%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 6px 1px color-mix(in srgb, var(--color-primary) 70%, transparent),
+    0 0 14px 4px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* ================================================================
+   GLOBAL BASE STYLES
+   ================================================================
+   These apply site-wide, outside of Tailwind utility classes.
+   ================================================================ */
+
+/* Smooth scrolling — used when Navbar links scroll to a section
+   on the same page, or when navigating between pages. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Default page background + text color + body font.
+   Every page inherits this unless overridden. */
+body {
+  background-color: var(--color-background);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased; /* smoother font rendering, matches the crisp UI in the design */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* All headings automatically use the heading font, so we never have
+   to manually add font-heading className on every single h1/h2/h3. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+/* Custom thin scrollbar styling to match the dark, techy aesthetic
+   of the design (default browser scrollbars look out of place on
+   a dark UI like this). */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-tertiary);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* ================================================================
+   SERVICES SIDEBAR — HIDDEN SCROLLBAR
+   ================================================================
+   Applied to the scrollable group list inside ServicesSidebar
+   (src/components/services-hub/ServicesSidebar.jsx). That list sits
+   inside the fixed-height Services Hub explorer shell, so once the
+   grouped services grow taller than the shell, this element scrolls
+   internally. The site's default thin red-on-black scrollbar (set
+   near the top of this file) would look out of place crammed inside
+   a narrow sidebar column, so the scrollbar is hidden here instead —
+   the list still scrolls normally via mouse wheel, trackpad, or
+   touch, just without a visible track/thumb.
+   ================================================================ */
+.services-sidebar-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* older Edge / IE */
+}
+.services-sidebar-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, modern Edge */
+}
+
+/* ================================================================
+   SERVICES HUB — DETAIL CARD SHADOW
+   ================================================================
+   Used by src/components/services-hub/ServiceDetailPanel.jsx. Gives
+   the active service's detail card a deep drop shadow so it visibly
+   lifts off the softly-highlighted explorer shell behind it and off
+   the plain sidebar list beside it, reinforcing that it's its own
+   elevated card rather than a flat panel.
+   ================================================================ */
+.service-detail-card {
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* ================================================================
+   MARQUEE EDGE FADE MASK
+   ================================================================
+   Applied to the wrapper around the testimonials Marquee rows so
+   that cards visually fade out (rather than getting hard-cropped)
+   as they approach the left/right edge of the section -- this is
+   the soft "vignette" look seen on the Magic UI marquee demo.
+   Implemented with `mask-image` so it works on ANY background
+   (dark cards, images, gradients) without needing a solid-color
+   gradient overlay div that could mismatch the page background.
+   ================================================================ */
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+/* ================================================================
+   WHYCHOOSEUS / CLICKSTACK CARD SHADOWS
+   ================================================================
+   Used by src/components/home/WhyChooseUs.jsx's FeatureCard. Kept
+   here instead of as Tailwind arbitrary-value classes (e.g.
+   `shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)]`) so the component
+   file only needs plain, readable Tailwind utility classes -- the
+   one-off shadow values live in a single named class here instead.
+   ================================================================ */
+
+/* The deep drop shadow under each card in the ClickStack deck,
+   giving the stack real depth/separation between layers. */
+.stack-card-shadow {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+}
+
+/* The soft red glow under each feature card's icon badge, matching
+   the glow language used on StatCard/ProgressBar icon badges
+   elsewhere on the Home page. */
+.icon-badge-glow {
+  box-shadow: 0 0 20px -5px var(--color-primary);
+}
+
+/* ================================================================
+   JOURNEY TIMELINE SECTION BACKGROUND (ABOUT US PAGE)
+   ================================================================
+   Used by src/components/about/JourneyTimeline.jsx to give the
+   "Our Journey" section its own distinct, faintly-technical
+   "blueprint grid" backdrop -- so it visually reads as a separate
+   panel/section rather than blending into the plain page
+   background like the sections above and below it. */
+.journey-grid-pattern {
+  background-image: radial-gradient(
+    circle,
+    var(--color-tertiary) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+}
+
+/* ================================================================
+   SERVICES ORBIT DIAGRAM (HOME PAGE)
+   ================================================================
+   Used by src/components/home/ServicesOrbitDiagram.jsx. These use
+   color-mix() / var() combos that aren't clean as Tailwind
+   arbitrary-value classes, so they live here as named classes
+   instead of inline style={{}} on the component. */
+
+/* Soft ambient backdrop glow behind the whole diagram canvas. */
+.orbit-backdrop-glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-primary) 14%, transparent),
+    transparent 70%
+  );
+}
+
+/* Glow riding along each connector line as it draws in. */
+.orbit-line-glow {
+  filter: drop-shadow(
+    0 0 3px color-mix(in srgb, var(--color-primary) 60%, transparent)
+  );
+}
+
+/* Glow on the traveling pulse dot at the tip of each connector line. */
+.orbit-pulse-glow {
+  filter: drop-shadow(0 0 5px var(--color-primary));
+}
+
+/* ================================================================
+   3D STACKED HEADING TEXT
+   ================================================================
+   Used by src/components/home/WhyChooseUs.jsx's "NOTHING HIDDEN.
+   EVERYTHING CERTIFIED." heading.
+
+   WHY THE FIRST ATTEMPT AT THIS DIDN'T WORK:
+   The reference design's "3D" look comes from SOLID, non-blurred,
+   diagonally-offset shadow layers -- like sheets of paper stacked
+   behind the letters. The first version used black shadow layers,
+   which is exactly wrong on this site: the page background is
+   already near-black (--color-background: #0d0d0d), so a black
+   shadow has almost no contrast against it and just reads as a
+   faint, blurry smudge instead of a visible stepped edge.
+
+   THE FIX:
+   Each shadow layer needs a color that visibly contrasts with BOTH
+   the text color AND the near-black page background:
+   - .heading-3d (for the white heading lines) uses --color-tertiary,
+     a mid grey -- visible against both white text and a black page.
+   - .heading-3d-accent (for the red "Certified." line) uses
+     --color-primary-dark, a darker red -- reads as a natural
+     maroon extrusion under the brighter red text.
+   Both use small, SOLID (zero-blur) 1px steps for the actual 3D
+   edge, then one final soft/blurred layer at the end purely to
+   ground the whole thing with an ambient shadow.
+   ================================================================ */
+.heading-3d {
+  text-shadow:
+    1px 1px 0 var(--color-tertiary),
+    2px 2px 0 var(--color-tertiary),
+    3px 3px 0 var(--color-tertiary),
+    4px 4px 6px rgba(0, 0, 0, 0.6);
+}
+
+.heading-3d-accent {
+  text-shadow:
+    1px 1px 0 var(--color-primary-dark),
+    2px 2px 0 var(--color-primary-dark),
+    3px 3px 0 var(--color-primary-dark),
+    4px 4px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ================================================================
+   SPECIALIST CARD GLOW (ABOUT US PAGE — "MEET THE SPECIALISTS")
+   ================================================================
+   Used by src/components/about/TeamMemberCard.jsx, which is
+   rendered inside each slot of the CardSpread fan built in
+   src/components/ui/CardSpread.jsx. CardSpread itself only ever
+   deals with neutral, colour-agnostic geometry (angles, radii,
+   plain black drop shadows) — it never references brand tokens, so
+   it can stay fully reusable for other fanned-card sections later.
+   All BRAND styling (this red ring + glow) therefore lives here,
+   applied only on top of whichever specialist card is currently the
+   active one in the fan, following the exact same split already
+   used by `.stack-card-shadow` / `.icon-badge-glow` above for the
+   Home page's WhyChooseUs deck.
+
+   Two layers, same technique as `.icon-badge-glow`:
+   - a crisp 1px red ring right at the card's edge, so the active
+     card reads as clearly "selected" even at a glance
+   - a soft, wider red glow behind that ring for the same ambient
+     "diagnostic scanner" warmth used everywhere else red glows
+     appear on this site (icon badges, orbit pulses, particles)
+   ================================================================ */
+.specialist-card-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 55%, transparent),
+    0 0 32px -6px var(--color-primary);
+}
+
+/* ================================================================
+   ANIMATED BEAM GRID BACKGROUND (ABOUT US PAGE — "BIG STATEMENT")
+   ================================================================
+   Used by src/components/shared/AnimatedBeamBackground.jsx, which
+   sits behind the closing "We Don't Cut Corners. We Find Them."
+   statement on the About Us page.
+
+   (Note: this recreates the visual idea of the "Animated Beam"
+   background from the Animata component library -- a dark backdrop
+   with a grid of thin diagonal lines, where a handful of the lines
+   carry a bright streak of light sliding down them. Animata's own
+   source is a shadcn-style registry file, not an installable
+   package, so this version is rebuilt from scratch for this project
+   using this brand's red/near-black palette, this project's plain
+   CSS keyframe convention (matching `.rising-particle` above), and
+   no extra dependencies.)
+
+   HOW ONE LANE WORKS:
+   AnimatedBeamBackground.jsx renders a row of fixed-width lanes,
+   each holding one faint diagonal divider line (plain Tailwind
+   utility classes, no custom class needed for that part). About a
+   third of the lanes also get a `.beam-streak` element layered
+   inside them, which slides from just above the section down past
+   the bottom on a loop, fading in and out at each end so the loop
+   point is never visible as a hard cut.
+
+   WHY THE PER-LANE RANDOM VALUES STAY IN JAVASCRIPT:
+   Exactly like `.rising-particle` above, every beam needs its own
+   duration, start delay, streak length, and peak brightness so the
+   grid reads as organic rather than a mechanically repeating
+   pattern. Those numbers are only known at render time, so they are
+   passed down as inline CSS custom properties per beam. The
+   keyframes, timing curve, and streak color themselves are fixed
+   and live here instead, never inline.
+   ================================================================ */
+@keyframes beam-streak {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--beam-opacity, 0.7);
+  }
+  85% {
+    opacity: var(--beam-opacity, 0.7);
+  }
+  100% {
+    transform: translateY(420%);
+    opacity: 0;
+  }
+}
+
+.beam-streak {
+  animation-name: beam-streak;
+  animation-duration: var(--beam-duration, 6s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* The streak itself: bright white-hot core fading to the brand red
+   at each tip, plus a soft red drop-shadow so it visually matches
+   the same "diagnostic scanner" red glow used by the icon badges,
+   orbit pulses, and rising particles elsewhere on the site. */
+.beam-streak-core {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-white) 45%,
+    var(--color-primary-light) 80%,
+    transparent
+  );
+  filter: drop-shadow(
+    0 0 4px color-mix(in srgb, var(--color-primary) 70%, transparent)
+  );
+}
+
+/* Soft ambient red glow centered behind the whole line grid, giving
+   the section some depth instead of a completely flat backdrop. */
+.beam-grid-backdrop-glow {
+  background: radial-gradient(
+    60% 60% at 50% 45%,
+    color-mix(in srgb, var(--color-primary) 16%, transparent),
+    transparent 75%
+  );
+}
+
+/* Fades the diagonal line grid out specifically behind the middle
+   of the section (exactly where the heading text sits), while
+   keeping the lines fully visible above and below it. Without this
+   mask, the lines run at a flat, even opacity everywhere, including
+   directly behind the letters, which makes the grid compete with
+   the text instead of framing it. The mask is an "inverse" radial:
+   fully transparent (line hidden) at the very center, fully opaque
+   (line shown) from about 65% of the way out to the edges. */
+.beam-grid-mask {
+  mask-image: radial-gradient(
+    ellipse 62% 58% at center,
+    transparent 35%,
+    black 75%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 62% 58% at center,
+    transparent 35%,
+    black 75%
+  );
+}
+
+/* ================================================================
+   CERTIFIED & TRUSTED -- CONCENTRIC RING BADGE CIRCLES (ABOUT PAGE)
+   ================================================================
+   Used by src/components/about/CertificationBadges.jsx. Recreates
+   the "target rings" look from the reference numbered-step design
+   the client shared -- a small bright circle surrounded by two
+   softly fading rings of the same red -- using layered box-shadow
+   instead of extra nested divs, so each badge stays a single
+   element with a plain, readable className list.
+
+   The gentle up/down "bubble" drift each circle does is animated
+   with Motion directly inside CertificationBadges.jsx (not here),
+   matching how every other continuously-looping animation on this
+   site (e.g. the Home page's services orbit diagram) is driven by
+   Motion rather than a plain CSS @keyframes rule.
+   ================================================================ */
+.cert-badge-ring {
+  box-shadow:
+    0 0 0 8px color-mix(in srgb, var(--color-primary) 14%, transparent),
+    0 0 0 16px color-mix(in srgb, var(--color-primary) 7%, transparent);
+}
+
+/* Respects the visitor's OS-level "reduce motion" preference by
+   simply hiding the streaks outright -- the faint static line grid
+   underneath still renders, so the section doesn't look broken. */
+@media (prefers-reduced-motion: reduce) {
+  .beam-streak {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ================================================================
+   TRANSFORMATION SLIDER BACKDROP GLOW (GALLERY PAGE)
+   ================================================================
+   Used by src/components/gallery/TransformationSection.jsx. A soft
+   red ambient glow sitting behind the compact before/after slider,
+   the same kind of "lit room" backdrop already used behind the
+   Home page's services orbit diagram, so the slider doesn't sit on
+   a completely flat background.
+   ================================================================ */
+.transformation-glow {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-primary) 12%, transparent),
+    transparent 70%
+  );
+}
