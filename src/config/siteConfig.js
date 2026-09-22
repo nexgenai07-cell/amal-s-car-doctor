@@ -41,10 +41,10 @@ export const siteConfig = {
   // Used in: Navbar (Book Now links to phone), Footer, Contact page,
   // CTA banners ("Or call +966...")
   contact: {
-    phone: "+966 59 103 7543",
+    phone: "0590546673",
     // Phone number formatted for use in tel: links (no spaces/symbols)
-    phoneRaw: "+966591037543",
-    whatsapp: "+966 59 103 7543",
+    phoneRaw: "0590546673",
+    whatsapp: "+966590546673",
     whatsappRaw: "966591037543", // used for wa.me/ links (no + sign)
     email: "info@amalcardoc.com",
   },
