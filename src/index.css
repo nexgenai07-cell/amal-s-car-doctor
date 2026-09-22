@@ -73,6 +73,15 @@
      green dot in "STATUS: OPERATIONAL" and "ALL SYSTEMS NOMINAL". */
   --color-success: #22c55e;
 
+  /* WHATSAPP — the official WhatsApp brand green. Used ONLY for the
+     floating WhatsApp chat button pinned to the corner of every page
+     (see FloatingWhatsAppButton.jsx). Kept as its own token instead
+     of reusing SUCCESS above so the chat button's color can be
+     changed later without affecting the status indicators, and vice
+     versa. */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-dark: #1da851; /* used for hover state on the WhatsApp button */
+
   /* ---------------- FONTS ---------------- */
 
   /* Heading font -> used on every h1/h2/h3 and big hero text */
@@ -720,4 +729,61 @@ h6 {
    gets a soft dark shadow to guarantee contrast in every frame. */
 .hero-text-shadow {
   text-shadow: 0 4px 28px rgba(0, 0, 0, 0.7);
+}
+
+/* ================================================================
+   FLOATING WHATSAPP BUTTON GLOW (EVERY PAGE)
+   ================================================================
+   Used by src/components/layout/FloatingWhatsAppButton.jsx. Adds a
+   soft green ambient glow around the fixed corner button so it
+   stands out against every page background/section it floats over,
+   the same "named class instead of a Tailwind arbitrary-value
+   class" technique already used by .icon-badge-glow above for the
+   Home page's feature cards.
+   ================================================================ */
+.whatsapp-button-glow {
+  box-shadow: 0 0 18px -4px color-mix(in srgb, var(--color-whatsapp) 65%, transparent);
+}
+
+/* ================================================================
+   FLOATING WHATSAPP BUTTON — RIPPLE RINGS (EVERY PAGE)
+   ================================================================
+   Used by src/components/layout/FloatingWhatsAppButton.jsx. Two
+   rings, offset by a negative animation-delay so the second one is
+   already mid-way through its cycle the moment the page loads (the
+   same "start already in motion" technique used by .rising-particle
+   above), continuously expand outward from the button and fade out
+   -- like ripples spreading from a drop of water -- so the button
+   draws the visitor's eye before they have even scrolled the page.
+   Purely decorative: the rings sit behind the real button and never
+   intercept clicks/taps (handled with pointer-events-none directly
+   in the component).
+   ================================================================ */
+@keyframes whatsapp-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.whatsapp-ripple-ring {
+  animation-name: whatsapp-ripple;
+  animation-duration: 2.2s;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+  background-color: var(--color-whatsapp);
+}
+
+/* Respects the visitor's OS-level "reduce motion" preference by
+   simply hiding the rings outright -- the button itself still shows
+   and works normally, it just no longer pulses. */
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-ripple-ring {
+    animation: none;
+    opacity: 0;
+  }
 }

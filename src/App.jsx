@@ -1,7 +1,5 @@
 /**
- * ================================================================
- * App.jsx
- * ================================================================
+
  * The root layout component. This renders on EVERY page and sets
  * up the consistent structure seen across the whole site:
  *
@@ -21,6 +19,7 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import BackToTopButton from "./components/layout/BackToTopButton";
+import FloatingWhatsAppButton from "./components/layout/FloatingWhatsAppButton";
 import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
@@ -45,10 +44,16 @@ export default function App() {
 
       <Footer />
 
-      {/* Floating bottom-left button. Hidden near the top of the
+      {/* Floating bottom-right button. Hidden near the top of the
           page, fades in once the visitor scrolls down, and smoothly
           scrolls back to the top of the page when clicked. */}
       <BackToTopButton />
+
+      {/* Floating bottom-right WhatsApp chat button. Always visible
+          on every page (unlike BackToTopButton above), and opens a
+          WhatsApp chat with the workshop's number in a new tab when
+          clicked. */}
+      <FloatingWhatsAppButton />
     </div>
   );
 }

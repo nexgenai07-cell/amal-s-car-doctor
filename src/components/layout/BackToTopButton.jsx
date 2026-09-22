@@ -1,7 +1,5 @@
 /**
- * ================================================================
- * BackToTopButton.jsx
- * ================================================================
+
  * A floating circular button pinned to the bottom-right corner of
  * the viewport. It stays hidden while the visitor is near the top
  * of the page, and fades/slides into view once they scroll down
@@ -28,6 +26,12 @@
  *
  * Usage: rendered once, near the top of App.jsx, alongside
  * ScrollToTop, so it is available on every page of the site.
+ *
+ * VERTICAL POSITION:
+ * Pinned to the same right edge as FloatingWhatsAppButton, but
+ * raised further up from the bottom of the viewport so the two
+ * buttons stack cleanly on top of each other instead of overlapping
+ * whenever both are visible on screen at the same time.
  * ================================================================
  */
 
@@ -75,7 +79,7 @@ export default function BackToTopButton() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
           className="
-            fixed bottom-5 right-5 z-50
+            fixed bottom-[96px] sm:bottom-[112px] right-8 sm:right-10 z-50
             flex items-center justify-center
             w-11 h-11 sm:w-12 sm:h-12
             rounded-full

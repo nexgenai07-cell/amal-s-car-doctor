@@ -1,7 +1,5 @@
 /**
- * ================================================================
- * siteConfig.js
- * ================================================================
+ 
  * SINGLE SOURCE OF TRUTH for every piece of brand/business
  * information used across the entire website.
  *
@@ -45,7 +43,10 @@ export const siteConfig = {
     // Phone number formatted for use in tel: links (no spaces/symbols)
     phoneRaw: "0590546673",
     whatsapp: "+966590546673",
-    whatsappRaw: "966591037543", // used for wa.me/ links (no + sign)
+    // Same number as "whatsapp" above, but digits-only (no "+" sign
+    // and no spaces) — this is the exact format required by the
+    // public wa.me/ deep-link format used to open a WhatsApp chat.
+    whatsappRaw: "966590546673",
     email: "info@amalcardoc.com",
   },
 
