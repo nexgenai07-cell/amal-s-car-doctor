@@ -11,19 +11,19 @@ export const comparisons = [
   {
     title: "Basic Oil Change",
     duration: "30 mins",
-    priceRange: "$45 - $60",
+    priceRange: "SAR 170 - 225",
     inspection: "Basic",
   },
   {
     title: "Full Synthetic Service",
     duration: "45 mins",
-    priceRange: "$85 - $110",
+    priceRange: "SAR 320 - 410",
     inspection: "Multipoint",
   },
   {
     title: "Diagnostic Package",
     duration: "1 - 2 hrs",
-    priceRange: "$120+",
+    priceRange: "SAR 450+",
     inspection: "Comprehensive",
   },
 ];

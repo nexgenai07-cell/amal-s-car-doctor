@@ -39,14 +39,14 @@ export const siteConfig = {
   // Used in: Navbar (Book Now links to phone), Footer, Contact page,
   // CTA banners ("Or call +966...")
   contact: {
-    phone: "0590546673",
+    phone: "+966 59 103 7543",
     // Phone number formatted for use in tel: links (no spaces/symbols)
-    phoneRaw: "0590546673",
-    whatsapp: "+966590546673",
+    phoneRaw: "+966591037543",
+    whatsapp: "+966 59 103 7543",
     // Same number as "whatsapp" above, but digits-only (no "+" sign
     // and no spaces) — this is the exact format required by the
     // public wa.me/ deep-link format used to open a WhatsApp chat.
-    whatsappRaw: "966590546673",
+    whatsappRaw: "966591037543",
     email: "info@amalcardoc.com",
   },
 

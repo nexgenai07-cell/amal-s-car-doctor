@@ -11,12 +11,23 @@ import Container from "../layout/Container";
 import { comparisons } from "../../data/comparisons";
 
 // Reusable row inside each comparison card: label on the left,
-// value on the right, separated by a thin bottom border.
-function ComparisonRow({ label, value }) {
+// value on the right, separated by a thin bottom border. When
+// "negotiable" is true, a small red-bordered "Negotiable" tag is
+// shown right before the value.
+function ComparisonRow({ label, value, negotiable = false }) {
   return (
-    <div className="flex items-center justify-between py-1 border-b border-tertiary/20 last:border-0">
+    <div className="flex items-center justify-between gap-2 py-1 border-b border-tertiary/20 last:border-0">
       <span className="text-neutral text-sm">{label}</span>
-      <span className="font-label text-sm text-white font-medium">{value}</span>
+      <span className="flex flex-wrap items-center justify-end gap-2">
+        {negotiable && (
+          <span className="font-label text-[10px] leading-none uppercase tracking-wide text-primary border border-primary rounded px-1.5 py-0.5">
+            Negotiable
+          </span>
+        )}
+        <span className="font-label text-sm text-white font-medium">
+          {value}
+        </span>
+      </span>
     </div>
   );
 }
@@ -43,7 +54,11 @@ export default function ComparisonSection() {
                 {item.title}
               </h3>
               <ComparisonRow label="Duration" value={item.duration} />
-              <ComparisonRow label="Price Range" value={item.priceRange} />
+              <ComparisonRow
+                label="Price Range"
+                value={item.priceRange}
+                negotiable
+              />
               <ComparisonRow
                 label="Includes Inspection"
                 value={item.inspection}

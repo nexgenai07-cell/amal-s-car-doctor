@@ -85,6 +85,9 @@ export default function ServiceDetailPanel({ service }) {
               showArrow={false}
             >
               Call Now
+              <span className="ml-2 text-xs font-medium tracking-normal text-primary">
+                {siteConfig.contact.phone}
+              </span>
             </Button>
           </div>
         </motion.div>
